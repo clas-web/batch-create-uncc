@@ -138,8 +138,36 @@ class Batch_Create_Network_Main_Menu extends Origin_Admin_Page {
 				$this->get_permalink()
 			);
 
+			// barton: add form with checkboxes when processing queue.
+			
+			ob_start();
+			?>
+			
+			<form action="<?php echo $proccess_link; ?>" method="post">
+			
+				<input type="hidden" name="action" value="loop" />
+
+				<div>
+					<input type="checkbox" name="email_admin" id="email_admin" value="Y" />
+					<label for="email_admin">Send email to the network administrator for each created site.</label>
+				</div>
+				<div>
+					<input type="checkbox" name="email_user" id="email_user" value="Y" />
+					<label for="email_user">Send email to each created user.</label>
+				</div>
+				
+				<input type="submit" value="Process Queue" />
+			
+			</form>
+
+			<?php
+			$form = ob_get_contents();
+			ob_end_clean();
+
 			$message = sprintf(
-				__( '<strong>Note:</strong> There are %d items (blogs/users) waiting to be processed. Click <a class="button-secondary" href="%s">here</a> to process the queue. If there is a problem, you can clear the queue by clicking <a href="%s">here</a>.', INCSUB_BATCH_CREATE_LANG_DOMAIN ),
+				__( '<strong>Note:</strong> There are %d items (blogs/users) waiting to be processed.'.
+					$form.
+					'If there is a problem, you can clear the queue by clicking <a href="%s">here</a>.', INCSUB_BATCH_CREATE_LANG_DOMAIN ),
 				$tmp_queue_count,
 				$proccess_link,
 				$clear_link

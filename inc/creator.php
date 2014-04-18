@@ -123,7 +123,7 @@ class Incsub_Batch_Create_Creator {
 			else {
 				$uname = array_search( $tnb[$email_index], $emails );
 				if ( $tnb[$username_index] != $uname )
-					$not_unique[$tnb[$email_index]] = ( isset( $not_unique[ $tnb[$email_index] ] ) && $not_unique[ $tnb[$email_index] ] ? $not_unique[ $tnb[$email_index] ] . ', ' : $uname . ', ') . $tnb[$user_name_index];	  		  	 	 		   	
+					$not_unique[$tnb[$email_index]] = ( isset( $not_unique[ $tnb[$email_index] ] ) && $not_unique[ $tnb[$email_index] ] ? $not_unique[ $tnb[$email_index] ] . ', ' : $uname . ', ') . $tnb[$user_name_index];
 			}
 		}
 
@@ -197,7 +197,6 @@ class Incsub_Batch_Create_Creator {
 		<script type="text/javascript" >
 			jQuery(function($) {
 
-
 				var rt_count = 0;
 				var rt_total = <?php echo $items_count; ?>;
 
@@ -219,9 +218,18 @@ class Incsub_Batch_Create_Creator {
 				function process_item () {
 					if ( rt_count >= rt_total ) return false;
 
+					// barton : send email settings through ajax.
+
+					var email_user = "<?php echo ( (!empty($_POST['email_user'])) ? $_POST['email_user'] : 'N' ); ?>";
+					var email_admin = "<?php echo ( (!empty($_POST['email_admin'])) ? $_POST['email_admin'] : 'N' ); ?>";
+
 					$.post(
 						ajaxurl,
-						{"action": "process_queue"},
+						{
+							"action": "process_queue",
+							"email_user": email_user,
+							"email_admin": email_admin
+						},
 						function(response) {
 							console.log(response);
 							process_item();
@@ -314,14 +322,21 @@ class Incsub_Batch_Create_Creator {
 			delete_user_option( $user_id, 'user_level' );
 
 			do_action( 'wpmu_new_user', $user_id );
+			$this->log( "User: $user_name created!" );
+
+			// barton : determine whether to email the user.
 
 			$send = true;
+			if( !empty($_POST['email_user']) )
+				$send = ( $_POST['email_user'] == 'Y' ? true : false );
 			$send = apply_filters( 'batch_create_send_new_user_notification', $send, $user_id );
 
 			if ( $send )
+			{
+				$this->log( "User: Sending new user notification." );
 				wp_new_user_notification( $user_id, $password );
+			}
 
-			$this->log( "User: $user_name created!" );
 			do_action( 'batch_create_after_create_user', $queue_item, $user_id );
 		}
 
@@ -437,12 +452,22 @@ class Incsub_Batch_Create_Creator {
 			if ( ! is_super_admin( $admin_id ) && ! get_user_option( 'primary_blog', $admin_id ) )
 				update_user_option( $admin_id, 'primary_blog', $blog_id, true );
 
+			$this->log( 'Blog: ' . $newdomain . $path . ' created!' );
+
+			// barton : determine whether to send a welcome email.
+			
+			$send = true;
+			if( !empty($_POST['email_admin']) )
+				$send = ( $_POST['email_admin'] == 'Y' ? true : false );
+
 			$send = apply_filters( 'batch_create_send_welcome_notification', true, $blog_id );
 
 			if ( ! empty( $password ) && $send )
+			{
+				$this->log( 'Blog: Sending new blog welcome notification.' );
 				wpmu_welcome_notification( $blog_id, $admin_id, $password, $blog_title, array( 'public' => 1 ) );
+			}
 
-			$this->log( 'Blog: ' . $newdomain . $path . ' created!' );
 		}
 		elseif ( $user_id && in_array( $domain, array( '', strtolower( 'null' ) ) ) ) {
 			// If blog not explicitly requested, add user to main blog
