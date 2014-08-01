@@ -103,15 +103,16 @@ class Incsub_Batch_Create_Creator {
 		$emails = array();
 		$not_unique = array();
 
+		// barton : increment columns over by one to make room for description.
 		switch ( $file_extension ) {
 			case 'csv': {
-				$email_index = 4;
-				$username_index = 2;
+				$email_index = 5;
+				$username_index = 3;
 				break;
 			}
 			case 'xls': {
-				$user_name_index = 3;
-				$email_index = 5;
+				$user_name_index = 4;
+				$email_index = 6;
 				break;
 			}
 		}
@@ -387,7 +388,9 @@ class Incsub_Batch_Create_Creator {
 			$this->log( sprintf( __( "Blog (%s) does NOT exist yet", INCSUB_BATCH_CREATE_LANG_DOMAIN ), $newdomain ), 'debug');
 		}
 
+		// barton : get blog description.
 		$blog_title = $queue_item->batch_create_blog_title;
+		$blog_description = $queue_item->batch_create_blog_description;
 		if ( ! $blog_id && $user_id && ( ! in_array( $newdomain, array( '', 'null' ) ) && ! in_array( $blog_title, array( '', 'null' ) ) ) ) {
 			// create blog
 			$this->log( __( 'Starting new blog creation', INCSUB_BATCH_CREATE_LANG_DOMAIN ) );
@@ -410,12 +413,14 @@ class Incsub_Batch_Create_Creator {
 					"\tDomain: [%s]\n" .
 					"\tPath: [%s]\n" .
 					"\tTitle: [%s]\n" .
+					"\tDescription: [%s]\n" .
 					"\tAdmin user ID: [%s]\n" .
 					"\tOn site: [%s]",
 					INCSUB_BATCH_CREATE_LANG_DOMAIN ),
 					$newdomain,
 					$path,
 					esc_html( $blog_title ),
+					esc_html( $blog_description ),
 					$admin_id,
 					$current_site->id
 				)
@@ -424,7 +429,9 @@ class Incsub_Batch_Create_Creator {
 			global $wpdb;
 
 			$wpdb->hide_errors();
-			$blog_id = wpmu_create_blog( $newdomain, $path, $blog_title, $admin_id , array( 'public' => 1 ), $current_site->id );
+			
+			// barton : add description to blog options.
+			$blog_id = wpmu_create_blog( $newdomain, $path, $blog_title, $admin_id , array( 'public' => 1, 'blogdescription' => $blog_description ), $current_site->id );
 			$wpdb->show_errors();
 
 			if ( is_wp_error( $blog_id ) ) {

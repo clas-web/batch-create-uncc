@@ -83,11 +83,13 @@ class Incsub_Batch_Create_Model {
 	private function create_queue_table() {
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
+		// barton : batch_create_blog_description column to table.
 		$sql = "CREATE TABLE $this->queue (
 				  batch_create_ID bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				  batch_create_site bigint(20) DEFAULT NULL,
 				  batch_create_blog_name varchar(255) NOT NULL DEFAULT 'null',
 				  batch_create_blog_title varchar(255) NOT NULL DEFAULT 'null',
+				  batch_create_blog_description varchar(255) NOT NULL DEFAULT 'null',
 				  batch_create_user_name varchar(255) NOT NULL DEFAULT 'null',
 				  batch_create_user_pass varchar(255) NOT NULL DEFAULT 'null',
 				  batch_create_user_email varchar(255) NOT NULL DEFAULT 'null',
@@ -149,19 +151,21 @@ class Incsub_Batch_Create_Model {
 		array_unshift( $args, $current_site->id );
 
 		$args[2] = iconv( "Windows-1252", "UTF-8", $args[2] );
-
+		
+		// barton : add batch_create_blog_description to insert statement.
 		$wpdb->insert(
 			$this->queue,
 			array(
-				'batch_create_site'			=> $args[0],
-				'batch_create_blog_name'	=> $args[1],
-				'batch_create_blog_title'	=> $args[2],
-				'batch_create_user_name'	=> $args[3],
-				'batch_create_user_pass'	=> $args[4],
-				'batch_create_user_email'	=> $args[5],
-				'batch_create_user_role'	=> $args[6],
+				'batch_create_site'				=> $args[0],
+				'batch_create_blog_name'		=> $args[1],
+				'batch_create_blog_title'		=> $args[2],
+				'batch_create_blog_description'	=> $args[3],
+				'batch_create_user_name'		=> $args[4],
+				'batch_create_user_pass'		=> $args[5],
+				'batch_create_user_email'		=> $args[6],
+				'batch_create_user_role'		=> $args[7],
 			),
-			array(  '%d', '%s', '%s', '%s', '%s', '%s', '%s' )
+			array(  '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
 		);
 
 		return $wpdb->insert_id;
