@@ -22,7 +22,7 @@ class Incsub_Batch_Create_Errors_Handler {
 	public static function show_exception( $message ) {
 
 		if ( ( ! is_multisite() && current_user_can( 'manage_options' ) ) || ( is_multisite() && is_super_admin() ) ) {
-			$plugin_data = get_plugin_data( INCSUB_BATCH_CREATE_PLUGIN_FILE_DIR );
+			$plugin_data = get_plugin_data( INCSUB_BATCH_CREATE_PLUGIN_FILE_DIR );	  		  	 	 		   	
 			?>
 				<div class="origin-plugin-exception" style="padding:20px 10px; margin:20px; background:#ACACAC">
 					<p><?php printf( __(  '<b>%s plugin error</b>: %s', INCSUB_BATCH_CREATE_LANG_DOMAIN ), $plugin_data['Name'], $message ); ?>

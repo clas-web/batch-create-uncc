@@ -680,7 +680,6 @@ if ( !class_exists('WPMUDEV_Dashboard_Notice3') ) {
 		}
 
 	}
-
 	$WPMUDEV_Dashboard_Notice3 = new WPMUDEV_Dashboard_Notice3();
 }
 
