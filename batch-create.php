@@ -2,7 +2,7 @@
 /*
 Plugin Name: Batch Create UNCC
 Plugin URI: http://premium.wpmudev.org/project/batch-create
-Description: Create hundred or thousands of blogs and users automatically by simply uploading a csv text file - subdomain and user creation automation has never been so easy.
+Description: Create hundred or thousands of blogs and users automatically by simply uploading a csv text file - subdomain and user creation automation has never been so easy. [UNCC] Update the WPMU DEV Batch Create plugin to support inclusion of site description.
 Author: WPMU DEV, Crystal Barton
 Text Domain: batch_create
 Version: 1.5
